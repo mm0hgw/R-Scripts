@@ -1,25 +1,24 @@
 # You will need packages ggplot2 and scales for this script to work
 library(ggplot2)
-attach(economics)
 library(scales)
 
-ch <- economics # we will use the dataset economics from the package ggplot2
+ch <- ggplot2::economics # we will use the dataset economics from the package ggplot2
 
 #we divide the unemployed with the total population to get the ratio as the y axis
 new.plot <- ggplot(ch,
                    aes(x = ch$date,
                        y = ch$unemploy/ch$pop))
 
-# We will produce the graph with a x axis tick of each year
+# We will produce the graph with x axis ticks every 2 years
 new.plot + (scale_x_date(breaks = date_breaks("2 years"),
                          name = "Year",
                          labels = date_format("%b '%y"))) +
 
-  # then we will give it a format of month and year and rotate it at 90 degrees
+  # and rotate it at 90 degrees
   theme(axis.text.x = element_text(angle = 30,
                                    hjust = 1)) +
 
-  # now we add the labels in our axes
+  # now we format our y axis
   scale_y_continuous(name = "Unemployed as % of US population",
                      labels = percent,
                      limits = c(0, 0.06),
@@ -36,7 +35,7 @@ new.plot + (scale_x_date(breaks = date_breaks("2 years"),
               size = 1.2,
               method = 'loess') +
 
-  # lets change some aspects of the theme
+  # lets change some visual aspects of the theme
   theme(panel.border = element_blank(),
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
