@@ -16,6 +16,6 @@
 #' @description
 #' Test data for your munging pleasure.
 #'@examples
-#'data(testData2)
+#'data(testData)
 #'mung(testData2)
 "testData2"
