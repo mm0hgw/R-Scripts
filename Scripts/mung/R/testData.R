@@ -12,7 +12,7 @@
 #' Test data for munging
 #'@doctype data
 #'@usage
-#'data(testData2)
+#'data(testData)
 #' @description
 #' Test data for your munging pleasure.
 #'@examples
