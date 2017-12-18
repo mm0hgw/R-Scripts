@@ -12,7 +12,7 @@ data(testData2)
 Test data for your munging pleasure.
 }
 \examples{
-data(testData2)
+data(testData)
 mung(testData2)
 }
 \keyword{datasets}
