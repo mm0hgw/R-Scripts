@@ -6,7 +6,7 @@
 \title{Test data for munging}
 \format{An object of class \code{data.frame} with 6 rows and 33 columns.}
 \usage{
-data(testData2)
+data(testData)
 }
 \description{
 Test data for your munging pleasure.
