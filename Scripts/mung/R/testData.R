@@ -8,5 +8,4 @@
 #'data(testData)
 #'mung(testData)
 #'mung(testData2)
-#'@export
 "testData"
