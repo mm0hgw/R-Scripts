@@ -31,4 +31,4 @@ testData2 <- structure(list(Z1 = c(2.44, 2.66, 2.32, 2, 1.94, 2.21), Z2 = c(2.31
     "H3", "I1", "I2", "I3", "J1", "J2", "J3"), class = "data.frame", row.names = c(NA, 
     -6L))
 
-save(file='data/testData.R',compress='xz',compression_level=9,list=c('testData','testData2'))
+save(file='data/testData.rda',compress='xz',compression_level=9,list=c('testData','testData2'))
