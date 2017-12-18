@@ -7,5 +7,15 @@
 #'@examples
 #'data(testData)
 #'mung(testData)
-#'mung(testData2)
 "testData"
+
+#' Test data for munging
+#'@doctype data
+#'@usage
+#'data(testData2)
+#' @description
+#' Test data for your munging pleasure.
+#'@examples
+#'data(testData2)
+#'mung(testData2)
+"testData2"
