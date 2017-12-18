@@ -1,7 +1,6 @@
 #' Test data for munging
 #'@doctype data
-#'@usage
-#'data(testData2)
+#'@usage data(testData2)
 #' @description
 #' testData2 for your munging pleasure.
 #'@examples
