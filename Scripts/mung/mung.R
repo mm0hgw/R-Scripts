@@ -31,8 +31,8 @@ testData2 <- structure(list(Z1 = c(2.44, 2.66, 2.32, 2, 1.94, 2.21), Z2 = c(2.31
     "H3", "I1", "I2", "I3", "J1", "J2", "J3"), class = "data.frame", row.names = c(NA, 
     -6L))
 
-mung <- function(x, TESTFUN = max) {
-    key <- gsub("[\\.0-9]", "", colnames(x))
+mung <- function(x, TESTFUN = max,
+    key = gsub("[\\.0-9]", "", colnames(x))){
     out <- do.call(cbind, lapply(unique(key), function(y) {
         key2 <- y == key
         sapply(seq(nrow(x)), function(z) {
