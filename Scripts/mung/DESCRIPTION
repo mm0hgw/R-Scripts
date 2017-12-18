@@ -1,7 +1,7 @@
 Package: mung
 Title: Mung
 Version: 0.0.0.9001
-Authors@R: c( person("Dale", email = "dale@piratepress.org", role = c("aut", "cph")), person("MavropaliasG", email = "MavropaliasG@notreal.spurious", role = c("cre", "cph")))
+Authors@R: person("Dale", email = "dale@piratepress.org", role = c("aut", "cph"))
 Description: Routines for munging.
 Depends: R (>= 3.3.2)
 License: MIT
