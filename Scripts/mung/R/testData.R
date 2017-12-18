@@ -3,9 +3,10 @@
 #'@usage
 #'data(testData)
 #' @description
-#' testData for your munging pleasure.
+#' Test data for your munging pleasure.
 #'@examples
 #'data(testData)
 #'mung(testData)
+#'mung(testData2)
 #'@export
 "testData"
