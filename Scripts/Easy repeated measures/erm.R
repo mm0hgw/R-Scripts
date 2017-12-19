@@ -10,7 +10,8 @@ library(jtools) #required to the APA figure theme
 # For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
 # Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
 
-mydata <- read.csv("~/Data.csv", stringsAsFactors=FALSE) #import your csv
+#mydata <- read.csv("~/Data.csv", stringsAsFactors=FALSE) #import your csv
+mydata <- read.delim("~/ExampleData.txt", stringsAsFactors=FALSE)
 df <- data.frame(mydata)                   #rename the data frame
 df[] <- lapply(df, unlist)                 #make the data frame not a list
 df[df==""]  <- NA                          #make empty cells NA
@@ -25,7 +26,7 @@ group2name <- "L"            #name of the second group
 myvar <- df[ , grepl(dfname, names( df ) ) ]   #creates a new variable with all the columns that start with the name you denoted in the "x" variable
 names <- names(myvar)                          #saves the column names of the newly created variable
 maxvalue <- max(myvar, na.rm = TRUE)
-myvar$Group <- df$GroupOne                     #creates a new column in the new variable containing the groups that are taken from the column of the original data frame
+myvar$Group <- df$Group                        #creates a new column in the new variable containing the groups that are taken from the column of the original data frame (name $Group accordingly)
 
 #assign(paste("df_",x,sep=""), myvar)          #names the new variable according to the name you gave in the "x" variable
 #assign(paste("names_",x,sep=""), names)       #names the "names" variable according to the name you gave in the "x" variable
