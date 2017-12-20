@@ -5,7 +5,7 @@ library(jtools) #required to the APA figure theme
 
 # unload mung for rebuiling
 if(requireNamespace('mung')){
-	detatch('mung',unload)
+	detatch('mung',unload=TRUE,character.only=TRUE)
 }
 
 # build mung if required
