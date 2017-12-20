@@ -58,7 +58,7 @@ temp1min  <- mung(tempgroup1,'min')
 temp2min  <- mung(tempgroup1,'min')
 temp1max  <- mung(tempgroup1,'max')
 temp2max  <- mung(tempgroup2,'max')
-joinedprocessed <- mung(myvarnogroup, max)  #this calculates a combined matrix to analyze later in an anova
+joinedprocessed <- mung(myvarnogroup, 'max')  #this calculates a combined matrix to analyze later in an anova
 joinedprocessed$Group <- myvar$Group    #add the groups to the combined data frame
 
 #in the function bellow, change temp1max and temp2max according to what you want to select (max, min or mean)
