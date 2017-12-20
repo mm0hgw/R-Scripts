@@ -15,8 +15,8 @@ library(mung) # required for munging
 # For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
 # Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
 
-data(mydata)
-
+#data(mydata)
+mydata <- read.delim("ExampleData.txt", stringsAsFactors=FALSE)
 df <- data.frame(mydata)                   #rename the data frame
 df[] <- lapply(df, unlist)                 #make the data frame not a list
 df[df==""]  <- NA                          #make empty cells NA
