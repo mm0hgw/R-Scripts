@@ -17,10 +17,10 @@ mung <- function(x, mungfuns = c("max", "min", "mean"), key = gsub("[\\.0-9]", "
                 MUNGFUN(as.numeric(x[z, key2]))
             })
         }))
-        if(length(mungfuns)==1){
-        colnames(out) <- y
-        }else{
-        colnames(out) <- paste(y, mungfuns, sep = ".")
+        if (length(mungfuns) == 1) {
+            colnames(out) <- y
+        } else {
+            colnames(out) <- paste(y, mungfuns, sep = ".")
         }
         out
     }))
