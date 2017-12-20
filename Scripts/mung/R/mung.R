@@ -11,7 +11,7 @@ mung <- function(x, mungfuns = c("max", "min", "mean"), key = gsub("[\\.0-9]", "
     FUNS <- lapply(mungfuns, get)
     stopifnot(all("function" == sapply(FUNS, class)))
     out <- do.call(cbind, lapply(unique(key), function(y) {
-        key2 <- y == key
+        key2 <- grep(y, key)
         out <- do.call(cbind, lapply(FUNS, function(MUNGFUN) {
             sapply(seq(nrow(x)), function(z) {
                 MUNGFUN(as.numeric(x[z, key2]))
