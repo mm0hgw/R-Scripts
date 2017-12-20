@@ -3,10 +3,19 @@ library(ggplot2) #required for the graph
 library(dplyr) #required for data transformation
 library(jtools) #required to the APA figure theme
 
-if(!requireNamespace('mung')){
-	devtools::install_github('MavropaliasG/R-Scripts',subdir='Scripts/mung')
-	library(mung) # required for munging
+# unload mung for rebuiling
+if(requireNamespace('mung')){
+	detatch('mung',unload)
 }
+
+# build mung if required
+#if(!requireNamespace('mung')){
+	devtools::install_github('MavropaliasG/R-Scripts',subdir='Scripts/mung')
+#}
+
+# import and attach mung
+library(mung) # required for munging
+
 # Data format should be: 
 # Each participant should be a different row.
 # Each variable, each time point and each trial should be in different columns.
@@ -14,8 +23,8 @@ if(!requireNamespace('mung')){
 # For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
 # Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
 
-data(mydata)
-
+#data(mydata)
+mydata <- read.delim("ExampleData.txt", stringsAsFactors=FALSE)
 df <- data.frame(mydata)                   #rename the data frame
 df[] <- lapply(df, unlist)                 #make the data frame not a list
 df[df==""]  <- NA                          #make empty cells NA
