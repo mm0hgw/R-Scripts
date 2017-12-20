@@ -3,9 +3,17 @@ library(ggplot2) #required for the graph
 library(dplyr) #required for data transformation
 library(jtools) #required to the APA figure theme
 
-if(!requireNamespace('mung')){
-	devtools::install_github('MavropaliasG/R-Scripts',subdir='Scripts/mung')
+# unload mung for rebuiling
+if(requireNamespace('mung')){
+	detatch('mung',unload)
 }
+
+# build mung if required
+#if(!requireNamespace('mung')){
+	devtools::install_github('MavropaliasG/R-Scripts',subdir='Scripts/mung')
+#}
+
+# import and attach mung
 library(mung) # required for munging
 
 # Data format should be: 
