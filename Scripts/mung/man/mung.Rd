@@ -4,14 +4,15 @@
 \alias{mung}
 \title{mung}
 \usage{
-mung(x, MUNGFUN = max, key = gsub("[\\\\.0-9]", "", colnames(x)))
+mung(x, mungfuns = c("max", "min", "mean"), key = gsub("[\\\\.0-9]", "",
+  colnames(x)))
 }
 \arguments{
 \item{x}{a data.frame, matrix or vector to mung.}
 
-\item{MUNGFUN}{a function to mung with.}
-
 \item{key}{a 'vector' mapping which columns mung together}
+
+\item{MUNGFUN}{a function to mung with.}
 }
 \value{
 a 'matrix' containing the munged results.

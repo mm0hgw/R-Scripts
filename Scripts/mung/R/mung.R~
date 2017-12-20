@@ -12,12 +12,12 @@ mung <- function(x, mungfuns = c("max", "min", "mean"), key = gsub("[\\.0-9]", "
     stopifnot(all("function" == sapply(FUNS, typeof)))
     out <- do.call(cbind, lapply(unique(key), function(y) {
         key2 <- y == key
-        out <- do.call(cbind, lapply(FUNS, function(MUNGFUN) {
+        do.call(cbind, lapply(unique(FUNS), function(MUNGFUN) {
             sapply(seq(nrow(x)), function(z) {
                 MUNGFUN(as.numeric(x[z, key2]))
             })
         }))
-        colnames(out) <- paste(y, mungfuns, sep = ".")
+        colnames(out) <- unique(key)
     }))
     out
 }
