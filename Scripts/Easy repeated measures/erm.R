@@ -14,8 +14,8 @@ if(!requireNamespace('mung')){
 # For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
 # Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
 
-#mydata <- read.csv("~/Data.csv", stringsAsFactors=FALSE) #import your csv
-mydata <- read.delim("~/ExampleData.txt", stringsAsFactors=FALSE)
+data(mydata)
+
 df <- data.frame(mydata)                   #rename the data frame
 df[] <- lapply(df, unlist)                 #make the data frame not a list
 df[df==""]  <- NA                          #make empty cells NA
