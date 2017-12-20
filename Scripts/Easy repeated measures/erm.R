@@ -3,6 +3,10 @@ library(ggplot2) #required for the graph
 library(dplyr) #required for data transformation
 library(jtools) #required to the APA figure theme
 
+if(!requireNamespace('mung')){
+	devtools::install_github('MavropaliasG/R-Scripts',subdir='Scripts/mung')
+	library(mung) # required for munging
+}
 # Data format should be: 
 # Each participant should be a different row.
 # Each variable, each time point and each trial should be in different columns.
@@ -49,41 +53,14 @@ myvarnogroup <- subset(myvar, select = -c(Group))   #created a variable with com
 colnames(tempgroup1) <- names_points
 colnames(tempgroup2) <- names_points
 
-mung <- function(x,TESTFUN=max){  # This function can calculate the max, min and mean of the columns that have the same starting character,
-  # credits for the creation go to mm0hgw  https://github.com/mm0hgw
-  
-  #strip numbers from colnames
-  cn <- gsub('[\\.0-9]','',colnames(x))
-  
-  key <- cn
-  out<-do.call(cbind,lapply(unique(key),function(y){
-    key2 <- y==key
-    sapply(seq(nrow(x)),function(z){
-      TESTFUN(as.numeric(x[z,key2]))
-    })
-  }
-  )   )
-  colnames(out)<-unique(key)
-  out
-}
-
 #Use the function to calculate the mean, max and min of the different trials in each time point and create a new matrix for each
-temp1mean <- mung(tempgroup1,mean)
-temp2mean <- mung(tempgroup2,mean)
-temp1min  <- mung(tempgroup1,min)
-temp2min  <- mung(tempgroup1,min)
-temp1max  <- mung(tempgroup1)
-temp2max  <- mung(tempgroup2)
-joinedprocessed <- mung(myvarnogroup, max)  #this calculates a combined matrix to analyze later in an anova
-
-# Turn all the newly created matrices to data frames
-temp1mean <- as.data.frame(temp1mean)
-temp2mean <- as.data.frame(temp2mean)
-temp1min  <- as.data.frame(temp1min)
-temp2min  <- as.data.frame(temp2min)
-temp1max  <- as.data.frame(temp1max)
-temp2max  <- as.data.frame(temp2max)
-joinedprocessed <- as.data.frame(joinedprocessed)
+temp1mean <- mung(tempgroup1,'mean')
+temp2mean <- mung(tempgroup2,'mean')
+temp1min  <- mung(tempgroup1,'min')
+temp2min  <- mung(tempgroup1,'min')
+temp1max  <- mung(tempgroup1,'max')
+temp2max  <- mung(tempgroup2,'max')
+joinedprocessed <- mung(myvarnogroup, 'max')  #this calculates a combined matrix to analyze later in an anova
 joinedprocessed$Group <- myvar$Group    #add the groups to the combined data frame
 
 #in the function bellow, change temp1max and temp2max according to what you want to select (max, min or mean)
