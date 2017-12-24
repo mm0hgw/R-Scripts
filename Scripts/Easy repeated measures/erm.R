@@ -54,3 +54,17 @@ summarizedlist <- lapply(mungedlist, function(x) x %>% summarise_all(funs(mean(.
 noidlist <- lapply(summarizedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
 
 meltedlist <- lapply(noidlist, function(x) melt(x)) # melts the data for subsequent use in figure
+
+plot <- ggplot(meltedlist[[3]], aes(x=variable, group = 1)) + 
+  geom_line(aes(y=meltedlist[[3]]$value), linetype = "dashed") + 
+  geom_point(aes(y=meltedlist[[3]]$value)) +
+  geom_errorbar(aes(ymin=meltedlist[[3]]$value-meltedlist[[1]], ymax=meltedlist[[3]]$value+meltedlist[[1]]), width=.1) +
+  geom_line(aes(y=meltedlist[[4]])) +
+  geom_point(aes(y=meltedlist[[4]])) +
+  geom_errorbar(aes(ymin=meltedlist[[4]]-meltedlist[[1]], ymax=meltedlist[[4]]+meltedlist[[2]]), width=.1) +
+  xlab("Time") +
+  ylab(variablename) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, maxvalue+maxvalue*0.1)) +
+  scale_x_discrete(labels=meltedlist[[3]]) 
+
+plot + theme_apa()
