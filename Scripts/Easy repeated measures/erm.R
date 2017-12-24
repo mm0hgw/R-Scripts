@@ -39,7 +39,6 @@ splitlist <- list()
 splitlist = split(myvar, f = myvar$Group)  # splits the data frame into datasets by group and places them into a list
 
 unnamedlist <- lapply(splitlist, function(x)  {colnames(x) = gsub(variablename, '', colnames(x)); return(x)}) # remove the variable name in the list leaving only the time points
-
 ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))]) # remove the "group" column from the lists, which is unused since the data frames are now already seperate elements in the list
 
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mode)) # "mung" the data sets according the mode you selected
