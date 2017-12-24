@@ -7,7 +7,6 @@
 # For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
 # Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
 
-
 MyData <- read.csv("~/MyData.csv", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mode <- 'max'                            #Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
@@ -48,11 +47,8 @@ meansd <- lapply(mungedlist, function(x) x %>% summarise_all(funs(sd(., na.rm = 
 names(meansd) <-  paste(names(meansd) ,sep = "_", "SD") # renames the standard deviation data frames
 mungedlist <- append(mungedlist, meansd, 0) # puts the standard deviation data frames into the munged list with the original data frames
 
-
 summarizedlist <- lapply(mungedlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
-
 noidlist <- lapply(summarizedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
-
 meltedlist <- lapply(noidlist, function(x) melt(x)) # melts the data for subsequent use in figure
 
 plot <- ggplot(meltedlist[[3]], aes(x=variable, group = 1)) + 
