@@ -1,3 +1,13 @@
+# This script is meant to automate repeated mesure analysis.
+
+# Data format should be: 
+# Each participant should be a different row.
+# Each variable, each time point and each trial should be in different columns.
+# If you have multiple time points and multiple measurements in each time point it is recommended that you use coding in the column name, in such a way that each column name is unique.
+# For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
+# Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
+
+
 MyData <- read.csv("~/MyData.csv", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mode <- 'max'                            #Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
