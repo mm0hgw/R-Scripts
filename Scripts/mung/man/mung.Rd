@@ -8,7 +8,7 @@ mung(x, mungfuns = c("max", "min", "mean"), key = gsub("[\\\\.0-9]", "",
   colnames(x)))
 }
 \arguments{
-\item{x}{a data.frame, matrix or vector to mung.}
+\item{x}{a data.frame to mung.}
 
 \item{mungfuns}{a vector of function names to mung with.}
 
