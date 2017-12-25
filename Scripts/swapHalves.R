@@ -1,4 +1,4 @@
-
+# Created by https://github.com/mm0hgw
 
 swapHalves <- function(x){
 	lx <- length(x)
