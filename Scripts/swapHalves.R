@@ -26,9 +26,11 @@ swapHalves2 <- function(x) {
     out
 }
 
-runTest <- function(testData) {
-    print(microbenchmark::microbenchmark(swapHalves(seq(testData)), swapHalves2(seq(testData))))
-    print(microbenchmark::microbenchmark(swapHalves(seq(testData+1)), swapHalves2(seq(testData+1))))
+runTest <- function(x) {
+testData <- seq(x)
+testData2 <- seq(x+1)
+    print(microbenchmark::microbenchmark(swapHalves(testData), swapHalves2(testData)))
+    print(microbenchmark::microbenchmark(swapHalves(testData2), swapHalves2(testData2)))
 }
 
 runTest((1e7))
