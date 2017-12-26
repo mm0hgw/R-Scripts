@@ -28,4 +28,5 @@ runTest <- function(testData = seq(1e+07)) {
     microbenchmark::microbenchmark(swapHalves(testData), swapHalves2(testData))
 }
 
-print(runTest())
+print(runTest(1e7))
+print(runTest(1e7+1))
