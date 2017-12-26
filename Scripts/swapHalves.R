@@ -2,7 +2,8 @@
 
 swapHalves <- function(x) {
     lx <- length(x)
-    if(lx<2)return(x)
+    if (lx < 2) 
+        return(x)
     key1 <- seq(lx%/%2)
     key2 <- seq(to = lx, length.out = lx%/%2)
     out <- x
@@ -13,7 +14,8 @@ swapHalves <- function(x) {
 
 swapHalves2 <- function(x) {
     lx <- length(x)
-    if(lx<2)return(x)
+    if (lx < 2) 
+        return(x)
     hlx <- lx%/%2
     key1 <- seq(hlx)
     key2 <- seq(to = lx, length.out = hlx)
@@ -27,10 +29,10 @@ swapHalves2 <- function(x) {
 }
 
 runTest <- function(x) {
-testData <- seq(x)
-testData2 <- seq(x+1)
+    testData <- seq(x)
+    testData2 <- seq(x + 1)
     print(microbenchmark::microbenchmark(swapHalves(testData), swapHalves2(testData)))
     print(microbenchmark::microbenchmark(swapHalves(testData2), swapHalves2(testData2)))
 }
 
-runTest((1e7))
+runTest((1e+07))
