@@ -35,5 +35,5 @@ runTest <- function(x,FUN=swapHalves) {
     print(microbenchmark::microbenchmark(swapHalves(testData2), swapHalves2(testData2)))
 }
 
-runTest(1e+07,swapHalves)
-runTest(1e+07,swapHalves2)
+runTest(1e+06,swapHalves)
+runTest(1e+06,swapHalves2)
