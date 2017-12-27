@@ -28,11 +28,12 @@ swapHalves2 <- function(x) {
     out
 }
 
-runTest <- function(x) {
+runTest <- function(x,FUN=swapHalves) {
     testData <- seq(x)
     testData2 <- seq(x + 1)
     print(microbenchmark::microbenchmark(swapHalves(testData), swapHalves2(testData)))
     print(microbenchmark::microbenchmark(swapHalves(testData2), swapHalves2(testData2)))
 }
 
-runTest((1e+07))
+runTest(1e+07,swapHalves)
+runTest(1e+07,swapHalves2)
