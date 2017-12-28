@@ -47,19 +47,21 @@ names(meansd) <-  paste(names(meansd) ,sep = "_", "SD") # renames the standard d
 mungedlist <- append(mungedlist, meansd, 0) # puts the standard deviation data frames into the munged list with the original data frames
 
 #### This loop takes the mungedlist and reorders the elements, so that each data frame that contains mean values, is followed by its standard deviation data frame
-i <- 0
-k <- 0
-l <- length(mungedlist)/2
-l <- l - 1
-orderedlist <- list()
-for (i in 0:l) {
-  orderedlist[k+1] <- mungedlist[(length(mungedlist)/2)+i+1]
-  orderedlist[k+2] <- mungedlist[i+1]
-  names(orderedlist)[k+1] <- names(mungedlist)[(length(mungedlist)/2)+i+1]
-  names(orderedlist)[k+2] <- names(mungedlist)[i+1]
-  k <- k+2
-}
+#i <- 0
+#k <- 0
+#l <- length(mungedlist)/2
+#l <- l - 1
+#orderedlist <- list()
+#for (i in 0:l) {
+#  orderedlist[k+1] <- mungedlist[(length(mungedlist)/2)+i+1]
+#  orderedlist[k+2] <- mungedlist[i+1]
+#  names(orderedlist)[k+1] <- names(mungedlist)[(length(mungedlist)/2)+i+1]
+#  names(orderedlist)[k+2] <- names(mungedlist)[i+1]
+#  k <- k+2
+#}
 ####
+
+orderedlist <- mungedlist[c(t(matrix(seq(length(mungedlist)), ncol = 2)[, c(2, 1)]))]
 
 summarizedlist <- lapply(orderedlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
 noidlist <- lapply(summarizedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
