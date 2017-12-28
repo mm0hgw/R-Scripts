@@ -46,20 +46,21 @@ meansd <- lapply(mungedlist, function(x) x %>% summarise_all(funs(sd(., na.rm = 
 names(meansd) <-  paste(names(meansd) ,sep = "_", "SD") # renames the standard deviation data frames
 mungedlist <- append(mungedlist, meansd, 0) # puts the standard deviation data frames into the munged list with the original data frames
 
-summarizedlist <- lapply(mungedlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
+#### This loop takes the mungedlist and reorders the elements, so that each data frame that contains mean values, is followed by its standard deviation data frame
+i <- 0
+k <- 0
+l <- length(mungedlist)/2
+l <- l - 1
+orderedlist <- list()
+for (i in 0:l) {
+  orderedlist[k+1] <- mungedlist[(length(mungedlist)/2)+i+1]
+  orderedlist[k+2] <- mungedlist[i+1]
+  names(orderedlist)[k+1] <- names(mungedlist)[(length(mungedlist)/2)+i+1]
+  names(orderedlist)[k+2] <- names(mungedlist)[i+1]
+  k <- k+2
+}
+####
+
+summarizedlist <- lapply(orderedlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
 noidlist <- lapply(summarizedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
 meltedlist <- lapply(noidlist, function(x) melt(x)) # melts the data for subsequent use in figure
-
-plot <- ggplot(meltedlist[[3]], aes(x=variable, group = 1)) + 
-  geom_line(aes(y=meltedlist[[3]]$value), linetype = "dashed") + 
-  geom_point(aes(y=meltedlist[[3]]$value)) +
-  geom_errorbar(aes(ymin=meltedlist[[3]]$value-meltedlist[[1]], ymax=meltedlist[[3]]$value+meltedlist[[1]]), width=.1) +
-  geom_line(aes(y=meltedlist[[4]])) +
-  geom_point(aes(y=meltedlist[[4]])) +
-  geom_errorbar(aes(ymin=meltedlist[[4]]-meltedlist[[1]], ymax=meltedlist[[4]]+meltedlist[[2]]), width=.1) +
-  xlab("Time") +
-  ylab(variablename) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, maxvalue+maxvalue*0.1)) +
-  scale_x_discrete(labels=meltedlist[[3]]) 
-
-plot + theme_apa()
