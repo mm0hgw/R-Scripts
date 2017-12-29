@@ -1,12 +1,4 @@
-# This script is meant to automate repeated mesure analysis.
-
-# Data format should be: 
-# Each participant should be a different row.
-# Each variable, each time point and each trial should be in different columns.
-# If you have multiple time points and multiple measurements in each time point it is recommended that you use coding in the column name, in such a way that each column name is unique.
-# For example if you are testing "Jump height" three times every day for 5 days, you can indicate the time point (day) as a letter of the alphabet and the trial number next to it.
-# Therefore the column names would be: JumpHeightA1, JumpHeightA2, JumpHeightA3, JumpHeightB1, JumpHeightB2 ....
-
+rm(list = ls())                          # clear your workspace
 MyData <- read.csv("~/MyData.csv", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mode <- 'max'                            #Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
@@ -42,27 +34,40 @@ unnamedlist <- lapply(splitlist, function(x)  {colnames(x) = gsub(variablename, 
 ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))]) # remove the "group" column from the lists, which is unused since the data frames are now already seperate elements in the list
 
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mode)) # "mung" the data sets according the mode you selected
-meansd <- lapply(mungedlist, function(x) x %>% summarise_all(funs(sd(., na.rm = TRUE)))) # calculated the standard deviation of the new munged data frames
-names(meansd) <-  paste(names(meansd) ,sep = "_", "SD") # renames the standard deviation data frames
-mungedlist <- append(mungedlist, meansd, 0) # puts the standard deviation data frames into the munged list with the original data frames
+noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
+transposedlist <- lapply(noidlist, function(x) t(x))
+sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) 
 
-#### This loop takes the mungedlist and reorders the elements, so that each data frame that contains mean values, is followed by its standard deviation data frame
-#i <- 0
-#k <- 0
-#l <- length(mungedlist)/2
-#l <- l - 1
-#orderedlist <- list()
-#for (i in 0:l) {
-#  orderedlist[k+1] <- mungedlist[(length(mungedlist)/2)+i+1]
-#  orderedlist[k+2] <- mungedlist[i+1]
-#  names(orderedlist)[k+1] <- names(mungedlist)[(length(mungedlist)/2)+i+1]
-#  names(orderedlist)[k+2] <- names(mungedlist)[i+1]
-#  k <- k+2
-#}
-####
+summarizedlist <- lapply(noidlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
+transposedlist2 <- lapply(summarizedlist, function(x) t(x)) ### transpose the list so that SD can be calculated as a seperate column
+bindedlist <- Map(cbind, transposedlist2, sdlist)
+bindedlist<-  Map(cbind, bindedlist, names(bindedlist)) # binding the sd column in the data frames
+colnam <- c("Mean","SD","Group")
+bindedlist<- lapply(bindedlist, function(x) {colnames(x) = colnam; x}) # changing the column names 
+combinedlist <- bindedlist
 
-orderedlist <- mungedlist[c(t(matrix(seq(length(mungedlist)), ncol = 2)[, c(2, 1)]))]
+### Changing the format of the columns so they work with ggplot and anova
+combinedlist <- do.call("rbind", combinedlist)
+combinedlist <- as.data.frame(combinedlist)
+combinedlist$Time <- rownames(combinedlist)
+combinedlist$SD <- as.character(combinedlist$SD)
+combinedlist$Mean <- as.character(combinedlist$Mean)
+combinedlist$SD <- as.numeric(combinedlist$SD)
+combinedlist$Mean <- as.numeric(combinedlist$Mean)
+combinedlist$Time <- as.character(combinedlist$Time)
+combinedlist$Time <- factor(combinedlist$Time, levels=unique(combinedlist$Time))
+#####
 
-summarizedlist <- lapply(orderedlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
-noidlist <- lapply(summarizedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
-meltedlist <- lapply(noidlist, function(x) melt(x)) # melts the data for subsequent use in figure
+plot <- ggplot(combinedlist, aes(x = Time, y = Mean, color = Group, group = Group)) + 
+  geom_line() +
+  geom_errorbar(aes(ymin=Mean-SD, ymax=Mean+SD), width=.1) 
+scale_y_continuous(expand = c(0, 0), limits = c(0, maxvalue+maxvalue*0.1))
+
+plot #+ theme_apa
+
+#### Anova not currently working finished
+
+tempmelt <- melt(mungedlist, id.vars= "ID", variable.name = "Time", value.name = variablename)
+
+model <- ezANOVA(tempmelt, dv = DVMDIS , ID, within = Time , detailed = TRUE, return_aov = TRUE)
+
