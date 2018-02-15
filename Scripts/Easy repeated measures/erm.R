@@ -6,7 +6,7 @@ GroupColumnName <- "Group"               # enter the name of the column that the
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
 unwant <- c("Z")                         # Declare unwanted time points so they are excluded
 baseline <- c("A")                       # Declare the baseline so that percentages can be calculated
-usePercentages <- T
+usePercentages <- T                      # declare if you want the values on the graph to be as percentages of baseline
 
 library(reshape2)  # required for melt
 library(ggplot2)   # required for the graph
@@ -38,13 +38,14 @@ ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))])
 
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the data sets according the mungmode you selected
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
+
 if(usePercentages==T){
 noidlist <- lapply(noidlist, function(x) {
 	out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,2]}))
 	colnames(out)<-colnames(x)
 	out
 })}
-print(noidlist)
+                   
 transposedlist <- lapply(noidlist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
 sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
 
