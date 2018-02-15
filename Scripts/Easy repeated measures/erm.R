@@ -1,5 +1,5 @@
 rm(list = ls())                          # clear your workspace
-MyData <- read.csv("~/MyData.csv", stringsAsFactors=FALSE)
+MyData <- read.delim("~/git/R-Scripts/Scripts/Easy repeated measures/ExampleData.txt", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mode <- 'max'                            #Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
 GroupColumnName <- "GroupOne"            # enter the name of the column that the Group variable is located
