@@ -1,8 +1,8 @@
 rm(list = ls())                          # clear your workspace
-MyData <- read.delim("~/git/R-Scripts/Scripts/Easy repeated measures/ExampleData.txt", stringsAsFactors=FALSE)
+MyData <- read.csv("~/git/R-Scripts/Scripts/Easy repeated measures/ExampleData.txt", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mode <- 'max'                            #Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
-GroupColumnName <- "GroupOne"            # enter the name of the column that the Group variable is located
+GroupColumnName <- "Group"            # enter the name of the column that the Group variable is located
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
 
 library(reshape2)  # required for melt
@@ -69,5 +69,5 @@ plot #+ theme_apa
 
 tempmelt <- melt(mungedlist, id.vars= "ID", variable.name = "Time", value.name = variablename)
 
-model <- ezANOVA(tempmelt, dv = DVMDIS , ID, within = Time , detailed = TRUE, return_aov = TRUE)
+model <- ezANOVA(tempmelt, dv = SquatH , ID, within = Time , detailed = TRUE, return_aov = TRUE)
 
