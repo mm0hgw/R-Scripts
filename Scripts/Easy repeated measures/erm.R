@@ -5,6 +5,7 @@ mungmode <- 'max'                        # Set the mode of choosing prefered val
 GroupColumnName <- "Group"               # enter the name of the column that the Group variable is located
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
 unwant <- c("Z")                         # Declare unwanted time points so they are excluded
+baseline <- c("A")                       # Declare the baseline so that percentages can be calculated
 
 library(reshape2)  # required for melt
 library(ggplot2)   # required for the graph
@@ -36,13 +37,14 @@ ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))])
 
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the data sets according the mungmode you selected
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
-transposedlist <- lapply(noidlist, function(x) t(x))
-sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) 
+percentagelist <- noidlist <- lapply(noidlist, function(x) )
+transposedlist <- lapply(noidlist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
+sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
 
 summarizedlist <- lapply(noidlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
-transposedlist2 <- lapply(summarizedlist, function(x) t(x)) ### transpose the list so that SD can be calculated as a seperate column
-bindedlist <- Map(cbind, transposedlist2, sdlist)
-bindedlist<-  Map(cbind, bindedlist, names(bindedlist)) # binding the sd column in the data frames
+transposedlist2 <- lapply(summarizedlist, function(x) t(x)) ### transpose the list again
+bindedlist <- Map(cbind, transposedlist2, sdlist)  # binding the sd column in the data frames
+bindedlist<-  Map(cbind, bindedlist, names(bindedlist)) # adding the names
 colnam <- c("Mean","SD","Group")
 bindedlist<- lapply(bindedlist, function(x) {colnames(x) = colnam; x}) # changing the column names 
 combinedlist <- bindedlist
