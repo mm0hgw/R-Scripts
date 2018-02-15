@@ -1,7 +1,7 @@
 rm(list = ls())                          # clear your workspace
 MyData <- read.csv("~/git/R-Scripts/Scripts/Easy repeated measures/ExampleData.txt", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
-mode <- 'max'                            # Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
+mungmode <- 'max'                        # Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
 GroupColumnName <- "Group"               # enter the name of the column that the Group variable is located
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
 unwant <- c("Z")                         # Declare unwanted time points so they are excluded
@@ -34,7 +34,7 @@ splitlist = split(myvar, f = myvar$Group)  # splits the data frame into datasets
 unnamedlist <- lapply(splitlist, function(x)  {colnames(x) = gsub(variablename, '', colnames(x)); return(x)}) # remove the variable name in the list leaving only the time points
 ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))]) # remove the "group" column from the lists, which is unused since the data frames are now already seperate elements in the list
 
-mungedlist <- lapply(ungroupedlist, function(x) mung(x,mode)) # "mung" the data sets according the mode you selected
+mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the data sets according the mungmode you selected
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
 transposedlist <- lapply(noidlist, function(x) t(x))
 sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) 
