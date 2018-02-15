@@ -1,5 +1,5 @@
 rm(list = ls())                          # clear your workspace
-MyData <- read.csv("~/git/R-Scripts/Scripts/Easy repeated measures/ExampleData.txt", stringsAsFactors=FALSE)
+MyData <- read.csv("ExampleData.txt", stringsAsFactors=FALSE)
 variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mungmode <- 'max'                        # Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
 GroupColumnName <- "Group"               # enter the name of the column that the Group variable is located
@@ -59,12 +59,12 @@ combinedlist$Time <- as.character(combinedlist$Time)
 combinedlist$Time <- factor(combinedlist$Time, levels=unique(combinedlist$Time))
 #####
 
-plot <- ggplot(combinedlist, aes(x = Time, y = Mean, color = Group, group = Group)) + 
+myPlot <- ggplot(combinedlist, aes(x = Time, y = Mean, color = Group, group = Group)) + 
   geom_line() +
   geom_errorbar(aes(ymin=Mean-SD, ymax=Mean+SD), width=.1) 
 scale_y_continuous(expand = c(0, 0), limits = c(0, maxvalue+maxvalue*0.1))
 
-plot #+ theme_apa
+myPlot #+ theme_apa
 
 #### Anova not currently working finished
 
