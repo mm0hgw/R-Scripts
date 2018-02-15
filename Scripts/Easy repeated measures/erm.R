@@ -37,7 +37,12 @@ ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))])
 
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the data sets according the mungmode you selected
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
-percentagelist <- noidlist <- lapply(noidlist, function(x) )
+	percentagelist <- lapply(noidlist, function(x) {
+	out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,2]}))
+	colnames(out)<-colnames(x)
+	out
+})
+print(percentagelist)
 transposedlist <- lapply(noidlist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
 sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
 
