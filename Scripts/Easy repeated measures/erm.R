@@ -6,7 +6,7 @@ GroupColumnName <- "Group"               # enter the name of the column that the
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
 unwant <- c("Z")                         # Declare unwanted time points so they are excluded
 baseline <- c("A")                       # Declare the baseline so that percentages can be calculated
-percentages <- 1                         # declare if you want the values on the graph to be as percentages of baseline
+usePercentages <- T                      # declare if you want the values on the graph to be as percentages of baseline
 
 library(reshape2)  # required for melt
 library(ggplot2)   # required for the graph
@@ -39,21 +39,17 @@ ungroupedlist <- lapply(unnamedlist, function(x) x[!(names(x) %in% c("Group"))])
 mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the data sets according the mungmode you selected
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
 
-ifelse(percentages = 1, 
-  	    percentagelist <- lapply(noidlist, function(x) {
-	        out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,2]}))
-	        colnames(out)<-colnames(x)
-    	    out
-        })
-      transposedlist <- lapply(percentagelist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
-      sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
-      summarizedlist <- lapply(percentagelist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
-      ,
-      transposedlist <- lapply(noidlist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
-      sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
-      summarizedlist <- lapply(noidlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
-      )
+if(usePercentages==T){
+noidlist <- lapply(noidlist, function(x) {
+	out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,2]}))
+	colnames(out)<-colnames(x)
+	out
+})}
+                   
+transposedlist <- lapply(noidlist, function(x) t(x)) # transposes the list elements for subsequent SD calculation
+sdlist <- lapply(transposedlist, apply, 1, sd, na.rm = T) # calculates the SD of the data
 
+summarizedlist <- lapply(noidlist, function(x) x %>% summarise_all(funs(mean(., na.rm = TRUE)))) # turnes the munged data frames to single-rows with only the mean of all the observations
 transposedlist2 <- lapply(summarizedlist, function(x) t(x)) ### transpose the list again
 bindedlist <- Map(cbind, transposedlist2, sdlist)  # binding the sd column in the data frames
 bindedlist<-  Map(cbind, bindedlist, names(bindedlist)) # adding the names
