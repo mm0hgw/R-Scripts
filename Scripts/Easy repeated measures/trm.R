@@ -1,24 +1,42 @@
-data(setOne)
-data(setTwo)
-data(HIkey)  #Group=='H'
-data(LIkey)  #Group=='L'
+MavGCyclingKeys <- list(High.Intensity=ultraCombo(33,10,5)
+,Low.Intensity=ultraCombo(220,10,5))
 
-timesx <- c(-24, 0, 24, 48, 72)
+setOne <- c("data/A.csv", "data/B.csv", "data/C.csv", "data/D.csv", "data/E.csv"
+)
+setTwo <- c("data/F.csv", "data/G.csv", "data/H.csv", "data/I.csv", "data/J.csv"
+)
+
+debugFlag <- T
+
+debugCat <- function(x,...){
+	if(debugFlag==T)
+	cat(x,...)
+}
+
+debugPrint <- function(x,...){
+	if(debugFlag==T)
+	print(x,...)
+return(x)
+}
+
+timesx <- c(-2, 0, 24, 48, 72)
 
 candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
 }
 
-do.set <- function(setFiles, keys = c(High.Intensity = HIkey, Low.Intensity = LIkey), 
+do.set <- function(setFiles, keys, setName,
     as.baseline.fraction = T, report.by.patient = F, pngOpts = list(height = 1024, 
         width = 768), times = timesx, colmap = c(1, 2, 3)) {
+	debugCat(paste(collapse='\n',c('Starting Repeated Measure Analysis on',setFiles,'')))
     hw <- (max(times) - min(times))/20
     trials <- lapply(setFiles, function(fn) read.csv(fn)[, -1])
     names(trials) <- gsub("data/", "", gsub(".csv", "", setFiles))
+debugPrint(keys)
     lapply(seq_along(keys), function(i) {
-        key <- keys[i]
-        groupName <- names(keys)[i]
-        trials <- lapply(trials, "[", key, T)
+        key <- keys[[i]]
+        groupName <- paste(sep='.',setName,names(keys)[i])
+        trials <- lapply(trials, "[", key$Gen(1), T)
         if (report.by.patient == F) 
             trails <- lapply(trials, function(trial) matrix(unlist(trial), nrow = 1))
         lapply(seq(nrow(trials[[1]])), function(j) {
@@ -51,7 +69,16 @@ do.set <- function(setFiles, keys = c(High.Intensity = HIkey, Low.Intensity = LI
     })
 }
 
-do.set(setOne)
-do.set(setTwo)
-do.set(setOne, report.by.patient = T)
-do.set(setTwo, report.by.patient = T)
+
+logical2combo <- function(x){
+	n <- length(x)
+	k <- sum(x)
+	i <- revCombnG(seq_along(x)[x],n)
+ultraCombo(i,n,k)
+}
+
+
+do.set(setOne,MavGCyclingKeys,'SetOne')
+do.set(setTwo,MavGCyclingKeys,'SetTwo')
+do.set(setOne,MavGCyclingKeys,'SetOne', report.by.patient = T)
+do.set(setTwo,MavGCyclingKeys,'SetTwo', report.by.patient = T)
