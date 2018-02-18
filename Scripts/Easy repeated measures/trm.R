@@ -23,7 +23,8 @@ do.set <- function(setFiles, keys = c(High.Intensity = HIkey, Low.Intensity = LI
             trails <- lapply(trials, function(trial) matrix(unlist(trial), nrow = 1))
         lapply(seq(nrow(trials[[1]])), function(j) {
             trial <- lapply(trials, function(tr) tr[j, ])
-            qtrial <- lapply(trial, quantile, names = F)
+            trialMeans <- sapply(trial, mean)
+            trialSDs <- sapply(trial, sd)
             if (report.by.patient == T) 
                 trialName <- paste(sep = "", groupName, ".Patient.", j) else trialName <- groupName
             fileName <- paste(trialName, ".png", sep = "")
@@ -33,18 +34,22 @@ do.set <- function(setFiles, keys = c(High.Intensity = HIkey, Low.Intensity = LI
             if (as.baseline.fraction == T) 
                 plotOpts$ylab <- "Fraction of baseline" else plotOpts$ylab <- "centimetres"
             trialRanges <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], qtrial[[k]][1], qtrial[[k]][5], hw))
+                do.call(candle, list(times[k], min(trial[[k]]),max(trial[[k]]), 
+                 hw))
             })
-            trialQuantiles <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], qtrial[[k]][2], qtrial[[k]][4], hw))
+            trialSDs <- lapply(seq_along(trial), function(k) {
+                do.call(candle, list(times[k], 
+                trialMeans[k]-trialSDs[k],
+                trialMeans[k]+trialSDs[k],
+                 hw))
             })
-            trialMean <- list(list(x = times, y = sapply(qtrial, "[", 3)))
+            trialMean <- list(list(x = times, y = trialMeans))
             do.call(png, pngOpts)
             do.call(plot, plotOpts)
             lapply(trialRanges, lines, col = colmap[3])
-            lapply(trialQuantiles, lines, col = colmap[2])
+            lapply(trialSDs, lines, col = colmap[2])
             lapply(trialMean, lines, col = colmap[1])
-            legend("bottomright", legend = c("Mean", "Quantile", "Range"), lty = 1, 
+            legend("bottomright", legend = c("μ", "σ", "Range"), lty = 1, 
                 col = colmap)
             dev.off()
         })
