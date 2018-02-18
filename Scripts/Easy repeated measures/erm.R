@@ -45,8 +45,9 @@ mungedlist <- lapply(ungroupedlist, function(x) mung(x,mungmode)) # "mung" the d
 noidlist <- lapply(mungedlist, function(x) x[!(names(x) %in% c("ID"))]) # removes the "ID" columns
 
 if(usePercentages==T){
+baselineposition <- grep(baseline, noidlist[1])
 noidlist <- lapply(noidlist, function(x) {
-	out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,2]}))
+	out<-do.call(rbind,lapply(seq(nrow(x)),function(i){x[i,]/x[i,baselineposition]}))
 	colnames(out)<-colnames(x)
 	out
 })}
