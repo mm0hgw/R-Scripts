@@ -27,9 +27,10 @@ df[df==" "] <- NA                 # make empty space cells NA
 
 myvar <- df[ , grepl(variablename, names( df ) ) ]   # creates a new variable with all the columns that start with the name you denoted in the "x" variable
 
-for (i in 1:length(unwanted)) {
+i<-1
+while (i < length(unwanted)) {
   myvar <- myvar[,-grep(paste(variablename,unwanted[i],sep=""), names(myvar))] # removes the time points you have declared in line 8
-  
+  i<-i+1
 }
 maxvalue <- max(myvar, na.rm = TRUE)                 # Detects the max value in the subset to create the y axis in the graph
 myvar$Group <- df[[GroupColumnName]]                 # creates a new column in the new variable containing the groups that are taken from the column of the original data frame
