@@ -1,5 +1,4 @@
 rm(list = ls())                          # clear your workspace
-# MyData <- read.csv("ExampleData.txt", stringsAsFactors=FALSE)
 MyData <- read.csv("~/MyData.csv")
 variablename <- "Torque70"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mungmode <- 'max'                        # Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
