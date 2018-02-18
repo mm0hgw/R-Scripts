@@ -1,10 +1,14 @@
-MavGCyclingKeys <- list(High.Intensity = ultraCombo(33, 10, 5), Low.Intensity = ultraCombo(220, 
-    10, 5))
-
-setOne <- c("data/A.csv", "data/B.csv", "data/C.csv", "data/D.csv", "data/E.csv")
-setTwo <- c("data/F.csv", "data/G.csv", "data/H.csv", "data/I.csv", "data/J.csv")
+MavGCyclingGroups <- list(High.Intensity = c(1, 2, 4, 7, 10), Low.Intensity = c(3, 
+    5, 6, 8, 9))
+MavGCyclingTimeline <- c(-1/2, 0, 1, 2, 3)
+MavGDataFile <- "ExampleData.txt"
+MavGCyclingSetOne <- lapply(seq(5) * 3 + 1, seq, length.out = 3)
+names(MavGCyclingSetOne) <- c("A", "B", "C", "D", "E")
+MavGCyclingSetTwo <- lapply(seq(5) * 3 + 16, seq, length.out = 3)
+names(MavGCyclingSetTwo) <- c("F", "G", "H", "I", "J")
 
 debugFlag <- T
+logFile <- "trm.log"
 
 debugCat <- function(x, ...) {
     if (debugFlag == T) 
@@ -17,30 +21,31 @@ debugPrint <- function(x, ...) {
     return(x)
 }
 
-timesx <- c(-1/2, 0, 1, 2, 3)
-
 candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
 }
 
-do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.patient = F, 
-    pngOpts = list(height = 1024, width = 768), times = timesx, colmap = c(1, 2, 
-        3)) {
-    debugCat(paste(collapse = "\n", c(paste("Starting Repeated Measure Analysis on", 
-        setName), setFiles, "")))
+do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = T, 
+    report.by.patient = F, pngOpts = list(height = 1024, width = 768), colmap = c(1, 
+        2, 3)) {
+    debugCat(paste("Starting Repeated Measure Analysis on", setName, "from", csvFile, 
+        "\nat", format(Sys.time(), "%a %b %d %X %Y %Z\n")))
     hw <- (max(times) - min(times))/20
-    trials <- lapply(setFiles, function(fn) read.csv(fn)[, -1])
-    names(trials) <- gsub("data/", "", gsub(".csv", "", setFiles))
-    debugPrint(keys)
-    lapply(seq_along(keys), function(i) {
-        key <- keys[[i]]
-        groupName <- paste(sep = ".", setName, names(keys)[i])
+    rawTrials <- read.csv(csvFile)
+    trials <- lapply(set, function(i) rawTrials[, i])
+    rm(rawTrials)
+    names(trials) <- names(set)
+    debugPrint(groups)
+    lapply(seq_along(groups), function(i) {
+        group <- groups[[i]]
+        groupName <- paste(sep = ".", setName, names(groups)[i])
         debugCat(paste("Analysing", groupName, "\n"))
-        groupTrials <- lapply(trials, "[", key$Gen(1), T)
+        groupTrials <- lapply(trials, "[", group, T)
         if (report.by.patient == F) 
             groupTrials <- lapply(groupTrials, function(trial) matrix(unlist(trial), 
                 nrow = 1))
         lapply(seq(nrow(groupTrials[[1]])), function(j) {
+            trial <- lapply(groupTrials, function(tr) tr[j, ])
             if (report.by.patient == T) 
                 trialName <- paste(sep = "", groupName, ".Patient.", j) else trialName <- groupName
             debugCat(paste("Processing", trialName, "\n"))
@@ -49,8 +54,11 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             if (as.baseline.fraction == T) {
                 trialBaseline <- mean(trial[[1]])
                 trial <- lapply(trial, function(tr) tr/trialBaseline)
+                debugPrint(do.call(rbind, trial))
             }
-            qtrial <- lapply(trial, quantile, names = F)
+            trialMeans <- sapply(trial, mean)
+            trialSDs <- sapply(trial, sd)
+            debugPrint(cbind(times, trialMeans, trialSDs))
             fileName <- paste(trialName, ".png", sep = "")
             pngOpts$file <- fileName
             plotOpts <- list(x = 0, xlim = c(min(times) - hw, max(times) + hw), ylim = range(unlist(trial)), 
@@ -59,32 +67,34 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             if (as.baseline.fraction == T) 
                 plotOpts$ylab <- "Fraction of baseline" else plotOpts$ylab <- "centimetres"
             trialRanges <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], qtrial[[k]][1], qtrial[[k]][5], hw))
+                do.call(candle, list(times[k], min(trial[[k]]), max(trial[[k]]), 
+                  hw))
             })
-            trialQuantiles <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], qtrial[[k]][2], qtrial[[k]][4], hw))
+            trialSDs <- lapply(seq_along(trial), function(k) {
+                do.call(candle, list(times[k], trialMeans[k] - trialSDs[k], trialMeans[k] + 
+                  trialSDs[k], hw))
             })
-            trialMean <- list(list(x = times, y = sapply(qtrial, "[", 3)))
+            trialMean <- list(list(x = times, y = trialMeans))
             do.call(png, pngOpts)
             do.call(plot, plotOpts)
             lapply(trialRanges, lines, col = colmap[3])
-            lapply(trialQuantiles, lines, col = colmap[2])
-            lapply(trialMean, lines, col = colmap[1], pch = 10, type = "b")
-            legend("bottomright", legend = c("Mean", "Quantile", "Range"), lty = 1, 
-                col = colmap)
+            lapply(trialSDs, lines, col = colmap[2])
+            lapply(trialMean, lines, col = colmap[1], type = "b", pch = 10)
+            legend("bottomright", legend = c("μ", "σ", "Range"), lty = 1, col = colmap)
             dev.off()
         })
     })
+    debugCat("Processing of", setName, "successfully completed at", format(Sys.time(), 
+        "%a %b %d %X %Y %Z\n\n"))
 }
 
-logical2combo <- function(x) {
-    n <- length(x)
-    k <- sum(x)
-    i <- revCombnG(seq_along(x)[x], n)
-    ultraCombo(i, n, k)
-}
+system(paste("rm", logFile))
 
-do.set(setOne, MavGCyclingKeys, "SetOne")
-do.set(setTwo, MavGCyclingKeys, "SetTwo")
-do.set(setOne, MavGCyclingKeys, "SetOne", report.by.patient = T)
-do.set(setTwo, MavGCyclingKeys, "SetTwo", report.by.patient = T)
+capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavGCyclingGroups), 
+    file = logFile, append = T)
+capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setTwo, "Set.Two", MavGCyclingGroups), 
+    file = logFile, append = T)
+capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavGCyclingGroups, 
+    report.by.patient = T), file = logFile, append = T)
+capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setTwo, "Set.Two", MavGCyclingGroups, 
+    report.by.patient = T), file = logFile, append = T)
