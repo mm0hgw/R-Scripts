@@ -1,11 +1,11 @@
 rm(list = ls())                          # clear your workspace
 # MyData <- read.csv("ExampleData.txt", stringsAsFactors=FALSE)
 MyData <- read.csv("~/MyData.csv")
-variablename <- "SquatH"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
+variablename <- "Torque70"                 # variable name, change the value in the quotation marks, case sensitive, write the name of the variable up until the time point
 mungmode <- 'max'                        # Set the mode of choosing prefered values among the different trials in the same time points, 'mean', 'max or 'min' values
 GroupColumnName <- "GroupOne"               # enter the name of the column that the Group variable is located
 IDname<- "ID"                            # enter the name of the column that the ID variable is located
-unwant <- c("Z")                         # Declare unwanted time points so they are excluded
+unwanted <- c("Z")                         # Declare unwanted time points so they are excluded
 baseline <- c("A")                       # Declare the baseline so that percentages can be calculated
 usePercentages <- T                      # declare if you want the values on the graph to be as percentages of baseline
 
@@ -27,6 +27,7 @@ df[df==""] <- NA                  # make empty cells NA
 df[df==" "] <- NA                 # make empty space cells NA
 
 myvar <- df[ , grepl(variablename, names( df ) ) ]   # creates a new variable with all the columns that start with the name you denoted in the "x" variable
+myvar <- myvar[,-grep(paste(variablename,unwanted,sep=""), names(myvar))] # removes the time point you have declared in line 8
 maxvalue <- max(myvar, na.rm = TRUE)                 # Detects the max value in the subset to create the y axis in the graph
 myvar$Group <- df[[GroupColumnName]]                 # creates a new column in the new variable containing the groups that are taken from the column of the original data frame
 myvar$ID <- df[[IDname]]                             # creates a new column in the new variable containing the IDs that are taken from the column of the original data frame
