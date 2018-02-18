@@ -94,7 +94,7 @@ capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavG
     file = logFile, append = T)
 capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setTwo, "Set.Two", MavGCyclingGroups), 
     file = logFile, append = T)
-capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavGCyclingGroups, 
-    report.by.patient = T), file = logFile, append = T)
-capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setTwo, "Set.Two", MavGCyclingGroups, 
-    report.by.patient = T), file = logFile, append = T)
+#capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavGCyclingGroups, 
+#    report.by.patient = T), file = logFile, append = T)
+#capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setTwo, "Set.Two", MavGCyclingGroups, 
+#    report.by.patient = T), file = logFile, append = T)
