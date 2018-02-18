@@ -17,7 +17,7 @@ debugPrint <- function(x, ...) {
     return(x)
 }
 
-timesx <- c(-1/24, 0, 1, 2, 3)
+timesx <- c(-1/2, 0, 1, 2, 3)
 
 candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
@@ -75,14 +75,12 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
     })
 }
 
-
 logical2combo <- function(x) {
     n <- length(x)
     k <- sum(x)
     i <- revCombnG(seq_along(x)[x], n)
     ultraCombo(i, n, k)
 }
-
 
 do.set(setOne, MavGCyclingKeys, "SetOne")
 do.set(setTwo, MavGCyclingKeys, "SetTwo")
