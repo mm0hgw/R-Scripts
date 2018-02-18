@@ -17,7 +17,7 @@ debugPrint <- function(x, ...) {
     return(x)
 }
 
-timesx <- c(-2, 0, 24, 48, 72)
+timesx <- c(-1/24, 0, 1, 2, 3)
 
 candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
@@ -52,7 +52,8 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             fileName <- paste(trialName, ".png", sep = "")
             pngOpts$file <- fileName
             plotOpts <- list(x = 0, xlim = c(min(times) - hw, max(times) + hw), ylim = range(unlist(trial)), 
-                xlab = "hours from exercise program", type = "n", main = trialName)
+                xlab = "days from exercise program", type = "n", main = trialName, 
+                sub = paste("Sample size:", length(trial[[1]])))
             if (as.baseline.fraction == T) 
                 plotOpts$ylab <- "Fraction of baseline" else plotOpts$ylab <- "centimetres"
             trialRanges <- lapply(seq_along(trial), function(k) {
