@@ -67,7 +67,7 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             do.call(plot, plotOpts)
             lapply(trialRanges, lines, col = colmap[3])
             lapply(trialQuantiles, lines, col = colmap[2])
-            lapply(trialMean, lines, col = colmap[1])
+            lapply(trialMean, lines, col = colmap[1],pch=10,type='b')
             legend("bottomright", legend = c("Mean", "Quantile", "Range"), lty = 1, 
                 col = colmap)
             dev.off()
