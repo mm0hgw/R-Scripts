@@ -46,8 +46,10 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             debugCat(paste("Processing", trialName, "\n"))
             trial <- lapply(groupTrials, function(tr) as.numeric(tr[j, ]))
             debugPrint(do.call(rbind, trial))
-            if (as.baseline.fraction == T) 
-                trial <- lapply(trial, function(tr) tr/mean(trial[[1]]))
+            if (as.baseline.fraction == T) {
+                trialBaseline <- mean(trial[[1]])
+                trial <- lapply(trial, function(tr) tr/trialBaseline)
+            }
             qtrial <- lapply(trial, quantile, names = F)
             fileName <- paste(trialName, ".png", sep = "")
             pngOpts$file <- fileName
@@ -67,7 +69,7 @@ do.set <- function(setFiles, keys, setName, as.baseline.fraction = T, report.by.
             do.call(plot, plotOpts)
             lapply(trialRanges, lines, col = colmap[3])
             lapply(trialQuantiles, lines, col = colmap[2])
-            lapply(trialMean, lines, col = colmap[1],pch=10,type='b')
+            lapply(trialMean, lines, col = colmap[1], pch = 10, type = "b")
             legend("bottomright", legend = c("Mean", "Quantile", "Range"), lty = 1, 
                 col = colmap)
             dev.off()
