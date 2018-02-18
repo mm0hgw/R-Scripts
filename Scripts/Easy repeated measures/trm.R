@@ -84,6 +84,8 @@ do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = 
             dev.off()
         })
     })
+    debugCat("Processing of", setName, "successfully completed at", format(Sys.time(), 
+        "%a %b %d %X %Y %Z\n\n"))
 }
 
 system(paste("rm", logFile))
