@@ -29,7 +29,7 @@ do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = 
     report.by.patient = F, pngOpts = list(height = 1024, width = 768), colmap = c(1, 
         2, 3)) {
     debugCat(paste("Starting Repeated Measure Analysis on", setName, "from", csvFile, 
-        "\n"))
+        "\nat", format(Sys.time(), "%a %b %d %X %Y %Z")))
     hw <- (max(times) - min(times))/20
     rawTrials <- read.csv(csvFile)
     trials <- lapply(set, function(i) rawTrials[, i])
@@ -79,12 +79,14 @@ do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = 
             do.call(plot, plotOpts)
             lapply(trialRanges, lines, col = colmap[3])
             lapply(trialSDs, lines, col = colmap[2])
-            lapply(trialMean, lines, col = colmap[1])
+            lapply(trialMean, lines, col = colmap[1], type = "b", pch = 10)
             legend("bottomright", legend = c("μ", "σ", "Range"), lty = 1, col = colmap)
             dev.off()
         })
     })
 }
+
+system(paste("rm", logFile))
 
 capture.output(do.set(MavGDataFile, MavGCyclingTimeline, setOne, "Set.One", MavGCyclingGroups), 
     file = logFile, append = T)
