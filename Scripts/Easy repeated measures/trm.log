@@ -1,5 +1,6 @@
 Starting Repeated Measure Analysis on Set.One from ExampleData.txt 
-at Sun Feb 18 15:48:24 2018 GMT$High.Intensity
+at Sun Feb 18 15:52:17 2018 GMT
+$High.Intensity
 [1]  1  2  4  7 10
 
 $Low.Intensity
@@ -94,7 +95,8 @@ png
 
 
 Starting Repeated Measure Analysis on Set.Two from ExampleData.txt 
-at Sun Feb 18 15:48:24 2018 GMT$High.Intensity
+at Sun Feb 18 15:52:17 2018 GMT
+$High.Intensity
 [1]  1  2  4  7 10
 
 $Low.Intensity
@@ -189,7 +191,8 @@ png
 
 
 Starting Repeated Measure Analysis on Set.One from ExampleData.txt 
-at Sun Feb 18 15:48:24 2018 GMT$High.Intensity
+at Sun Feb 18 15:52:17 2018 GMT
+$High.Intensity
 [1]  1  2  4  7 10
 
 $Low.Intensity
@@ -432,7 +435,8 @@ png
 
 
 Starting Repeated Measure Analysis on Set.Two from ExampleData.txt 
-at Sun Feb 18 15:48:25 2018 GMT$High.Intensity
+at Sun Feb 18 15:52:17 2018 GMT
+$High.Intensity
 [1]  1  2  4  7 10
 
 $Low.Intensity

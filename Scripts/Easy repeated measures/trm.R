@@ -29,7 +29,7 @@ do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = 
     report.by.patient = F, pngOpts = list(height = 1024, width = 768), colmap = c(1, 
         2, 3)) {
     debugCat(paste("Starting Repeated Measure Analysis on", setName, "from", csvFile, 
-        "\nat", format(Sys.time(), "%a %b %d %X %Y %Z")))
+        "\nat", format(Sys.time(), "%a %b %d %X %Y %Z\n")))
     hw <- (max(times) - min(times))/20
     rawTrials <- read.csv(csvFile)
     trials <- lapply(set, function(i) rawTrials[, i])
