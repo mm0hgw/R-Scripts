@@ -17,7 +17,7 @@ logCat <- function(x, ...) {
 
 logPrint <- function(x, ...) {
     if (logFlag == T) 
-        cat(capture.output(print(x, ...)), "\n", file = logFile, append = T)
+        capture.output(print(x, ...), file = logFile, append = T)
     return(x)
 }
 
