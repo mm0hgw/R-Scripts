@@ -117,11 +117,11 @@ setTwo <- do.set(rawTrials, MavGCyclingTimeline, MavGCyclingSetTwo, "Set.Two", M
 graphlines <- c(setOne, setTwo)
 graphCols <- seq_along(graphlines)
 dput(graphlines, "graphlines.dput")
-# png('trm.png')
-plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(do.call(c, do.call(c, 
-    graphlines)), "[", "x"))), ylim = range(do.call(c, sapply(do.call(c, do.call(c, 
-    graphlines)), "[", "y"))), main = "Cycling study", ylab = "fraction of baseline", 
-    xlab = "days after exercise program")
+lineList <- do.call(c, do.call(c, graphlines))
+lineList2 <- lineList[-grep("\\.Range[[:digit:]]*$", names(lineList))]
+plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList2, "[", 
+    "x"))), ylim = range(do.call(c, sapply(lineList2, "[", "y"))), main = "Cycling study", 
+    ylab = "fraction of baseline", xlab = "days after exercise program")
 legendOpts <- list(x = "bottomleft", legend = names(graphlines), pch = 10, col = graphCols)
 
 png("trm.png", height = 768, width = 1024)
