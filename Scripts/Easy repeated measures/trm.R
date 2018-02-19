@@ -2,9 +2,9 @@ MavGCyclingGroups <- list(High.Intensity = c(1, 2, 4, 7, 10), Low.Intensity = c(
     5, 6, 8, 9))
 MavGCyclingTimeline <- c(-1/2, 0, 1, 2, 3)
 MavGDataFile <- "ExampleData.txt"
-MavGCyclingSetOne <- lapply(seq(5) * 3 + 1, seq, length.out = 3)
+MavGCyclingSetOne <- lapply(seq(5) * 3 + 2, seq, length.out = 3)
 names(MavGCyclingSetOne) <- c("A", "B", "C", "D", "E")
-MavGCyclingSetTwo <- lapply(seq(5) * 3 + 16, seq, length.out = 3)
+MavGCyclingSetTwo <- lapply(seq(5) * 3 + 17, seq, length.out = 3)
 names(MavGCyclingSetTwo) <- c("F", "G", "H", "I", "J")
 
 logFlag <- T
@@ -32,7 +32,7 @@ do.set <- function(rawTrials, times, set, setName, groups, as.baseline.fraction 
         "%a %b %d %X %Y %Z\n")))
     logPrint(times)
     logPrint(lapply(set, function(x) colnames(rawTrials)[x]))
-    logPrint(groups)
+    logPrint(lapply(groups, function(x) rownames(rawTrials)[x]))
     
     # set candle width
     hw <- (max(times) - min(times))/20
