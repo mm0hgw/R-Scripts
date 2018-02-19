@@ -1,5 +1,5 @@
 Starting Repeated Measure Analysis on Set.One 
-at Mon Feb 19 15:38:41 2018 GMT
+at Mon Feb 19 16:44:50 2018 GMT
 [1] -0.5  0.0  1.0  2.0  3.0
 $A
 [1] "SquatHΑ1" "SquatHΑ2" "SquatHΑ3"
@@ -17,10 +17,10 @@ $E
 [1] "SquatHE1" "SquatHE2" "SquatHE3"
 
 $High.Intensity
-[1] "1"  "2"  "4"  "7"  "10"
+[1] "1.H"  "2.H"  "4.H"  "7.H"  "10.H"
 
 $Low.Intensity
-[1] "3" "5" "6" "8" "9"
+[1] "3.L" "5.L" "6.L" "8.L" "9.L"
 
 Analysing Set.One.High.Intensity 
 Processing Set.One.High.Intensity 
@@ -92,10 +92,10 @@ B   0.0  0.9422263 0.2066822
 C   1.0  0.9527683 0.2233024
 D   2.0  0.9731973 0.2004572
 E   3.0  1.0044787 0.2081351
-Processing of Set.One successfully completed at Mon Feb 19 15:38:41 2018 GMT
+Processing of Set.One successfully completed at Mon Feb 19 16:44:50 2018 GMT
 
 Starting Repeated Measure Analysis on Set.Two 
-at Mon Feb 19 15:38:41 2018 GMT
+at Mon Feb 19 16:44:50 2018 GMT
 [1] -0.5  0.0  1.0  2.0  3.0
 $F
 [1] "SquatHF1" "SquatHF2" "SquatHF3"
@@ -113,10 +113,10 @@ $J
 [1] "SquatHJ1" "SquatHJ2" "SquatHJ3"
 
 $High.Intensity
-[1] "1"  "2"  "4"  "7"  "10"
+[1] "1.H"  "2.H"  "4.H"  "7.H"  "10.H"
 
 $Low.Intensity
-[1] "3" "5" "6" "8" "9"
+[1] "3.L" "5.L" "6.L" "8.L" "9.L"
 
 Analysing Set.Two.High.Intensity 
 Processing Set.Two.High.Intensity 
@@ -188,5 +188,5 @@ G   0.0  0.9214159 0.1889301
 H   1.0  0.8914015 0.2097079
 I   2.0  0.9300025 0.2302948
 J   3.0  0.9662601 0.2544977
-Processing of Set.Two successfully completed at Mon Feb 19 15:38:41 2018 GMT
+Processing of Set.Two successfully completed at Mon Feb 19 16:44:50 2018 GMT
 

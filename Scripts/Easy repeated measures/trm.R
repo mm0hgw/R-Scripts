@@ -112,6 +112,7 @@ do.set <- function(rawTrials, times, set, setName, groups, as.baseline.fraction 
 system(paste("rm", logFile))
 
 rawTrials <- read.csv(MavGDataFile)
+rownames(rawTrials) <- paste(seq(nrow(rawTrials)), rawTrials$Group, sep = ".")
 setOne <- do.set(rawTrials, MavGCyclingTimeline, MavGCyclingSetOne, "Set.One", MavGCyclingGroups)
 setTwo <- do.set(rawTrials, MavGCyclingTimeline, MavGCyclingSetTwo, "Set.Two", MavGCyclingGroups)
 graphlines <- c(setOne, setTwo)
