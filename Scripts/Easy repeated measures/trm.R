@@ -31,7 +31,7 @@ do.set <- function(rawTrials, times, set, setName, groups, as.baseline.fraction 
     logCat(paste("Starting Repeated Measure Analysis on", setName, "\nat", format(Sys.time(), 
         "%a %b %d %X %Y %Z\n")))
     logPrint(times)
-    logPrint(set)
+    logPrint(lapply(set, function(x) colnames(rawTrials)[x]))
     logPrint(groups)
     
     # set candle width
