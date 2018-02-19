@@ -7,17 +7,17 @@ names(MavGCyclingSetOne) <- c("A", "B", "C", "D", "E")
 MavGCyclingSetTwo <- lapply(seq(5) * 3 + 16, seq, length.out = 3)
 names(MavGCyclingSetTwo) <- c("F", "G", "H", "I", "J")
 
-debugFlag <- T
+logFlag <- T
 logFile <- "trm.log"
 
-debugCat <- function(x, ...) {
-    if (debugFlag == T) 
-        cat(x, ...)
+logCat <- function(x, ...) {
+    if (logFlag == T) 
+        cat(x, file = logFile, append = T, ...)
 }
 
-debugPrint <- function(x, ...) {
-    if (debugFlag == T) 
-        print(x, ...)
+logPrint <- function(x, ...) {
+    if (logFlag == T) 
+        cat(capture.output(print(x, ...)), file = logFile, append = T)
     return(x)
 }
 
@@ -25,85 +25,102 @@ candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
 }
 
-do.set <- function(csvFile, times, set, setName, groups, as.baseline.fraction = T, 
-    report.by.patient = F, do.ranges = F) {
-    debugCat(paste("Starting Repeated Measure Analysis on", setName, "from", csvFile, 
-        "\nat", format(Sys.time(), "%a %b %d %X %Y %Z\n")))
+do.set <- function(rawTrials, times, set, setName, groups, as.baseline.fraction = T, 
+    report.by.patient = F) {
+    # Report start
+    logCat(paste("Starting Repeated Measure Analysis on", setName, "\nat", format(Sys.time(), 
+        "%a %b %d %X %Y %Z\n")))
+    logPrint(times)
+    logPrint(set)
+    logPrint(groups)
+    
+    # set candle width
     hw <- (max(times) - min(times))/20
-    rawTrials <- read.csv(csvFile)
+    
+    # subset and name trials
     trials <- lapply(set, function(i) rawTrials[, i])
-    rm(rawTrials)
     names(trials) <- names(set)
-    debugPrint(groups)
+    
+    # lapply across patient groups
     out <- lapply(seq_along(groups), function(i) {
+        
+        # pull group and name and log
         group <- groups[[i]]
         groupName <- paste(sep = ".", setName, names(groups)[i])
-        debugCat(paste("Analysing", groupName, "\n"))
+        logCat(paste("Analysing", groupName, "\n"))
+        
+        # subset trials by patient group
         groupTrials <- lapply(trials, "[", group, T)
-        if (report.by.patient == F) 
+        
+        
+        # flatten results, maybe
+        if (report.by.patient != T) 
             groupTrials <- lapply(groupTrials, function(trial) matrix(unlist(trial), 
                 nrow = 1))
-        lapply(seq(nrow(groupTrials[[1]])), function(j) {
-            trial <- lapply(groupTrials, function(tr) tr[j, ])
+        
+        # lapply across patients (or group)
+        patients <- lapply(seq(nrow(groupTrials[[1]])), function(j) {
+            
+            # name results and report to user
             if (report.by.patient == T) 
                 trialName <- paste(sep = "", groupName, ".Patient.", j) else trialName <- groupName
-            debugCat(paste("Processing", trialName, "\n"))
+            logCat(paste("Processing", trialName, "\n"))
+            
+            # subset trials by patient
             trial <- lapply(groupTrials, function(tr) as.numeric(tr[j, ]))
-            debugPrint(do.call(rbind, trial))
+            
+            # log to demostrate actual subset
+            logPrint(do.call(rbind, trial))
+            
+            # normalise to baseline and log, maybe
             if (as.baseline.fraction == T) {
                 trialBaseline <- mean(trial[[1]])
                 trial <- lapply(trial, function(tr) tr/trialBaseline)
-                debugPrint(do.call(rbind, trial))
+                logPrint(do.call(rbind, trial))
             }
+            
+            # finally got sample! calculate mean and sd and log to demonstrate actual results
             trialMeans <- sapply(trial, mean)
             trialSDs <- sapply(trial, sd)
-            debugPrint(cbind(times, trialMeans, trialSDs))
-            fileName <- paste(trialName, ".png", sep = "")
-            plotOpts <- list(x = 0, xlim = c(min(times) - hw, max(times) + hw), ylim = range(unlist(trial)), 
-                xlab = "days from exercise program", type = "n", main = trialName, 
-                sub = paste("Sample size:", length(trial[[1]])))
-            if (as.baseline.fraction == T) 
-                plotOpts$ylab <- "Fraction of baseline" else plotOpts$ylab <- "centimetres"
+            logPrint(cbind(times, trialMeans, trialSDs))
+            
+            # calculate graph lines for mean, sd and range
             trialRanges <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], min(trial[[k]]), max(trial[[k]]), 
-                  hw))
+                candle(times[k], min(trial[[k]]), max(trial[[k]]), hw)
             })
             trialSDs <- lapply(seq_along(trial), function(k) {
-                do.call(candle, list(times[k], trialMeans[k] - trialSDs[k], trialMeans[k] + 
-                  trialSDs[k], hw))
+                candle(times[k], trialMeans[k] - trialSDs[k], trialMeans[k] + trialSDs[k], 
+                  hw)
             })
             trialMean <- list(list(x = times, y = trialMeans))
+            
+            # package, name and return results
             out <- list(trialMean, trialSDs, trialRanges)
             names(out) <- paste(trialName, c("μ", "σ", "Range"), sep = ".")
-            if (do.ranges != T) 
-                out <- out[-3]
             out
         })
+        do.call(c, patients)
     })
+    
+    # label output report completion and return results
     names(out) <- paste(sep = ".", setName, names(groups))
-    debugCat("Processing of", setName, "successfully completed at", format(Sys.time(), 
+    logCat("Processing of", setName, "successfully completed at", format(Sys.time(), 
         "%a %b %d %X %Y %Z\n\n"))
     out
 }
 
 system(paste("rm", logFile))
 
-capture.output(a <- do.set(MavGDataFile, MavGCyclingTimeline, MavGCyclingSetOne, 
-    "Set.One", MavGCyclingGroups), file = logFile, append = T)
-capture.output(b <- do.set(MavGDataFile, MavGCyclingTimeline, MavGCyclingSetTwo, 
-    "Set.Two", MavGCyclingGroups), file = logFile, append = T)
-# capture.output(do.set(MavGDataFile, MavGCyclingTimeline, MavGCyclingSetOne,
-# 'Set.One', MavGCyclingGroups, report.by.patient = T), file = logFile, append =
-# T) capture.output(do.set(MavGDataFile, MavGCyclingTimeline, MavGCyclingSetTwo,
-# 'Set.Two', MavGCyclingGroups, report.by.patient = T), file = logFile, append =
-# T)
-graphlines <- c(a, b)
+rawTrials <- read.csv(MavGDataFile)
+setOne <- do.set(rawTrials, MavGCyclingTimeline, MavGCyclingSetOne, "Set.One", MavGCyclingGroups)
+setTwo <- do.set(rawTrials, MavGCyclingTimeline, MavGCyclingSetTwo, "Set.Two", MavGCyclingGroups)
+graphlines <- c(setOne, setTwo)
 graphCols <- seq_along(graphlines)
 dput(graphlines, "graphlines.dput")
 # png('trm.png')
 plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(do.call(c, do.call(c, 
-    do.call(c, graphlines))), "[", "x"))), ylim = range(do.call(c, sapply(do.call(c, 
-    do.call(c, do.call(c, graphlines))), "[", "y"))), main = "Cycling study", ylab = "fraction of baseline", 
+    graphlines)), "[", "x"))), ylim = range(do.call(c, sapply(do.call(c, do.call(c, 
+    graphlines)), "[", "y"))), main = "Cycling study", ylab = "fraction of baseline", 
     xlab = "days after exercise program")
 legendOpts <- list(x = "bottomleft", legend = names(graphlines), pch = 10, col = graphCols)
 
@@ -111,7 +128,7 @@ png("trm.png", height = 768, width = 1024)
 do.call(plot, plotOpts)
 do.call(legend, legendOpts)
 lapply(seq_along(graphlines), function(i) {
-    g <- graphlines[[i]][[1]]
+    g <- graphlines[[i]]
     graphCol <- graphCols[i]
     lapply(g[[1]], lines, col = graphCol, type = "b", pch = 10)
     lapply(g[[2]], lines, col = graphCol)
