@@ -155,4 +155,31 @@ lapply(seq_along(graphlines), function(i) {
 })
 dev.off()
 
-MavGDataFile <- "ExampleData.txt"
+MavGDataFile2 <- "~/MyData.csv"
+rawTrials2 <- read.csv(MavGDataFile2)
+colnames(rawTrials2) <- deGreek(colnames(rawTrials2))
+
+mungVar2 <- mungColnames(colnames(rawTrials2))
+mungEvent2 <- mungVar2("SquatH")
+setList2 <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent2))
+groupAll <- list(All.Patients = T)
+graphlines2 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList2, groupAll))
+graphCols2 <- seq_along(graphlines2)
+dput(graphlines2, "graphlines2.dput")
+lineList3 <- do.call(c, do.call(c, graphlines2))
+lineList4 <- lineList3[-grep("\\.Range[[:digit:]]*$", names(lineList3))]
+plotOpts2 <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList4, "[", 
+    "x"))), ylim = range(do.call(c, sapply(lineList4, "[", "y"))), main = "Cycling study", 
+    ylab = "fraction of baseline", xlab = "days after exercise program")
+legendOpts2 <- list(x = "bottomleft", legend = names(graphlines2), pch = 10, col = graphCols2)
+
+png("trm2.png", height = 768, width = 1024)
+do.call(plot, plotOpts2)
+do.call(legend, legendOpts2)
+lapply(seq_along(graphlines2), function(i) {
+    g <- graphlines2[[i]]
+    graphCol <- graphCols2[i]
+    lapply(g[[1]], lines, col = graphCol, type = "b", pch = 10)
+    lapply(g[[2]], lines, col = graphCol)
+})
+dev.off()
