@@ -81,10 +81,7 @@ do.setList <- function(rawTrials, times, setList, groups, as.baseline.fraction =
                 trialSDs <- sapply(trial, sd)
                 logPrint(cbind(times, trialMeans, trialSDs))
                 
-                # calculate graph lines for mean, sd and range
-                trialRanges <- lapply(seq_along(trial), function(k) {
-                  candle(times[k], min(trial[[k]]), max(trial[[k]]), hw)
-                })
+                # calculate graph lines for mean, sd
                 trialSDs <- lapply(seq_along(trial), function(k) {
                   candle(times[k], trialMeans[k] - trialSDs[k], trialMeans[k] + trialSDs[k], 
                     hw)
@@ -92,8 +89,8 @@ do.setList <- function(rawTrials, times, setList, groups, as.baseline.fraction =
                 trialMean <- list(list(x = times, y = trialMeans))
                 
                 # package, name and return results
-                out <- list(trialMean, trialSDs, trialRanges)
-                names(out) <- paste(trialName, c("μ", "σ", "Range"), sep = ".")
+                out <- list(trialMean, trialSDs)
+                names(out) <- paste(trialName, c("μ", "σ"), sep = ".")
                 out
             })
             do.call(c, patients)
@@ -138,9 +135,8 @@ graphlines <- do.call(c, do.setList(rawTrials, MavGCyclingTimeline, setList, Mav
 graphCols <- seq_along(graphlines)
 dput(graphlines, "graphlines.dput")
 lineList <- do.call(c, do.call(c, graphlines))
-lineList2 <- lineList[-grep("\\.Range[[:digit:]]*$", names(lineList))]
-plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList2, "[", 
-    "x"))), ylim = range(do.call(c, sapply(lineList2, "[", "y"))), main = "Cycling study", 
+plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList, "[", 
+    "x"))), ylim = range(do.call(c, sapply(lineList, "[", "y"))), main = "Cycling study", 
     ylab = "fraction of baseline", xlab = "days after exercise program")
 legendOpts <- list(x = "bottomleft", legend = names(graphlines), pch = 10, col = graphCols)
 
@@ -166,10 +162,9 @@ groupAll <- list(All.Patients = T)
 graphlines2 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList2, groupAll))
 graphCols2 <- seq_along(graphlines2)
 dput(graphlines2, "graphlines2.dput")
-lineList3 <- do.call(c, do.call(c, graphlines2))
-lineList4 <- lineList3[-grep("\\.Range[[:digit:]]*$", names(lineList3))]
-plotOpts2 <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList4, "[", 
-    "x"))), ylim = range(do.call(c, sapply(lineList4, "[", "y"))), main = "Cycling study", 
+lineList2 <- do.call(c, do.call(c, graphlines2))
+plotOpts2 <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList2, "[", 
+    "x"))), ylim = range(do.call(c, sapply(lineList2, "[", "y"))), main = "Cycling study", 
     ylab = "fraction of baseline", xlab = "days after exercise program")
 legendOpts2 <- list(x = "bottomleft", legend = names(graphlines2), pch = 10, col = graphCols2)
 
@@ -179,6 +174,28 @@ do.call(legend, legendOpts2)
 lapply(seq_along(graphlines2), function(i) {
     g <- graphlines2[[i]]
     graphCol <- graphCols2[i]
+    lapply(g[[1]], lines, col = graphCol, type = "b", pch = 10)
+    lapply(g[[2]], lines, col = graphCol)
+})
+dev.off()
+
+mungEvent3 <- mungVar2("Torque70")
+setList3 <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent3))
+graphlines3 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList3, groupAll))
+graphCols3 <- seq_along(graphlines3)
+dput(graphlines3, "graphlines3.dput")
+lineList3 <- do.call(c, do.call(c, graphlines3))
+plotOpts3 <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList3, "[", 
+    "x"))), ylim = range(do.call(c, sapply(lineList3, "[", "y"))), main = "Torque70", 
+    ylab = "fraction of baseline", xlab = "days after exercise program")
+legendOpts3 <- list(x = "bottomleft", legend = names(graphlines3), pch = 10, col = graphCols3)
+
+png("trm3.png", height = 768, width = 1024)
+do.call(plot, plotOpts3)
+do.call(legend, legendOpts3)
+lapply(seq_along(graphlines3), function(i) {
+    g <- graphlines3[[i]]
+    graphCol <- graphCols3[i]
     lapply(g[[1]], lines, col = graphCol, type = "b", pch = 10)
     lapply(g[[2]], lines, col = graphCol)
 })
