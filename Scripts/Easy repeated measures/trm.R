@@ -17,8 +17,29 @@ candle <- function(x, y1, y2, hw) {
     list(x = c(x - hw, x + hw, x, x, x + hw, x - hw), y = c(rep(y1, 3), rep(y2, 3)))
 }
 
+trialMeanSD <- function(xAxis) {
+    hw <- range(xAxis)
+    hw[1] <- -hw[1]
+    hw <- sum(hw)/50
+    function(trial) {
+        trialMeans <- sapply(trial, mean)
+        trialSDs <- sapply(trial, sd)
+        x <- seq_along(trial)
+        names(x) <- names(trial)
+        trialSDs <- lapply(x, function(i) {
+            mean <- trialMeans[i]
+            sd <- trialSDs[i]
+            candle(xAxis[i], mean - sd, mean + sd, hw)
+        })
+        trialMeans <- list(list(x = xAxis, y = trialMeans))
+        out <- list(trialMeans, trialSDs)
+        names(out) <- c("μ", "σ")
+        out
+    }
+}
+
 do.setList <- function(rawTrials, times, setList, groups, as.baseline.fraction = T, 
-    report.by.patient = F) {
+    report.by.patient = F, TRIALFUN = return) {
     setIndex <- seq_along(setList)
     names(setIndex) <- names(setList)
     lapply(setIndex, function(i) {
@@ -77,23 +98,8 @@ do.setList <- function(rawTrials, times, setList, groups, as.baseline.fraction =
                 }
                 
                 # finally got sample! calculate mean and sd and log to demonstrate actual results
-                trialMeans <- sapply(trial, mean)
-                trialSDs <- sapply(trial, sd)
-                logPrint(cbind(times, trialMeans, trialSDs))
-                
-                # calculate graph lines for mean, sd
-                trialSDs <- lapply(seq_along(trial), function(k) {
-                  candle(times[k], trialMeans[k] - trialSDs[k], trialMeans[k] + trialSDs[k], 
-                    hw)
-                })
-                trialMean <- list(list(x = times, y = trialMeans))
-                
-                # package, name and return results
-                out <- list(trialMean, trialSDs)
-                names(out) <- paste(trialName, c("μ", "σ"), sep = ".")
-                out
+                TRIALFUN(trial)
             })
-            do.call(c, patients)
         })
         
         # label output report completion and return results
@@ -122,6 +128,7 @@ system(paste("rm", logFile))
 MavGCyclingGroups <- list(High.Intensity = c(1, 2, 4, 7, 10), Low.Intensity = c(3, 
     5, 6, 8, 9))
 MavGCyclingTimeline <- c(-1/2, 0, 1, 2, 3)
+MavGCyclingMeanSD <- trialMeanSD(MavGCyclingTimeline)
 MavGDataFile <- "ExampleData.txt"
 rawTrials <- read.csv(MavGDataFile)
 rownames(rawTrials) <- paste(seq(nrow(rawTrials)), rawTrials$Group, sep = ".")
@@ -131,10 +138,12 @@ setNameList <- list(Set.One = c(A = "A", B = "B", C = "C", D = "D", E = "E"), Se
 mungVar <- mungColnames(colnames(rawTrials))
 mungEvent <- mungVar("SquatH")
 setList <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent))
-graphlines <- do.call(c, do.setList(rawTrials, MavGCyclingTimeline, setList, MavGCyclingGroups))
+graphlines <- do.call(c, do.setList(rawTrials, MavGCyclingTimeline, setList, MavGCyclingGroups, 
+    TRIALFUN = MavGCyclingMeanSD))
 graphCols <- seq_along(graphlines)
 dput(graphlines, "graphlines.dput")
 lineList <- do.call(c, do.call(c, graphlines))
+print(lineList)
 plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList, "[", 
     "x"))), ylim = range(do.call(c, sapply(lineList, "[", "y"))), main = "Cycling study", 
     ylab = "fraction of baseline", xlab = "days after exercise program")
@@ -159,7 +168,8 @@ mungVar2 <- mungColnames(colnames(rawTrials2))
 mungEvent2 <- mungVar2("SquatH")
 setList2 <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent2))
 groupAll <- list(All.Patients = T)
-graphlines2 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList2, groupAll))
+graphlines2 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList2, groupAll, 
+    TRIALFUNS = MavGCyclingMeanSD))
 graphCols2 <- seq_along(graphlines2)
 dput(graphlines2, "graphlines2.dput")
 lineList2 <- do.call(c, do.call(c, graphlines2))
@@ -181,7 +191,8 @@ dev.off()
 
 mungEvent3 <- mungVar2("Torque70")
 setList3 <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent3))
-graphlines3 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList3, groupAll))
+graphlines3 <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList3, groupAll, 
+    TRIALFUNS = MavGCyclingMeanSD))
 graphCols3 <- seq_along(graphlines3)
 dput(graphlines3, "graphlines3.dput")
 lineList3 <- do.call(c, do.call(c, graphlines3))
@@ -200,3 +211,34 @@ lapply(seq_along(graphlines3), function(i) {
     lapply(g[[2]], lines, col = graphCol)
 })
 dev.off()
+
+rawVariables <- gsub("A1$", "", grep("A1$", colnames(rawTrials2), value = T))
+
+names(rawVariables) <- rawVariables
+lapply(rawVariables, function(rawVariable) {
+    mungEvent <- mungVar2(rawVariable)
+    setList <- lapply(setNameList, function(setNames) lapply(setNames, mungEvent))
+    print(setList)
+    graphlines <- do.call(c, do.setList(rawTrials2, MavGCyclingTimeline, setList, 
+        groupAll, TRIALFUNS = MavGCyclingMeanSD))
+    graphCols <- seq_along(graphlines)
+    lineList <- do.call(c, do.call(c, graphlines))
+    if (all(is.na(do.call(c, sapply(lineList, "[", "y"))))) 
+        return()
+    plotOpts <- list(x = 0, type = "n", xlim = range(do.call(c, sapply(lineList, 
+        "[", "x"))), ylim = range(do.call(c, sapply(lineList, "[", "y"))), main = rawVariable, 
+        ylab = "fraction of baseline", xlab = "days after exercise program")
+    legendOpts <- list(x = "bottomleft", legend = names(graphlines), pch = 10, col = graphCols)
+    
+    png(paste(sep = "", "pics/", rawVariable, ".png"), height = 768, width = 1024)
+    do.call(plot, plotOpts)
+    do.call(legend, legendOpts)
+    lapply(seq_along(graphlines), function(i) {
+        g <- graphlines[[i]]
+        graphCol <- graphCols[i]
+        lapply(g[[1]], lines, col = graphCol, type = "b", pch = 10)
+        lapply(g[[2]], lines, col = graphCol)
+    })
+    dev.off()
+    
+})
